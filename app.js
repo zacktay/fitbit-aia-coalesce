@@ -25,8 +25,7 @@ const getAiaDataByYearAndMonth = (year, month) => {
 
   return aiaData
     .filter(({ points }) => points === "50" || points === "100")
-    .map(({ awardedDate }) => awardedDate)
-    .map(each => moment(each, "YYYY-MM-DD").endOf("day"))
+    .map(({ awardedDate }) => moment(awardedDate, "YYYY-MM-DD").endOf("day"))
     .filter(
       each =>
         each.isSameOrAfter(startOfMonth) && each.isSameOrBefore(endOfMonth)
