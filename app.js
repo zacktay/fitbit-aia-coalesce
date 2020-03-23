@@ -8,14 +8,18 @@ import aiaData from "./static-data/AIA_Data_23032020";
 const app = express();
 const port = 3000;
 
-const getAiaDataByYear = year => {
+const getAiaDataByYear = (year, month) => {
+  const startOfMonth = moment([year, month]).startOf("month").startOf('day');
+  const endOfMonth = moment([year, month]).endOf("month").endOf('day');
+
   return aiaData
     .filter(
-      ({ points, awardedDate }) =>
-        (points === "50" || points === "100") && awardedDate.includes(year)
+      ({ points }) =>
+        (points === "50" || points === "100")
     )
     .map(({ awardedDate }) => awardedDate)
-    .map(each => moment(each, "YYYY-MM-DD").startOf("day"));
+    .map(each => moment(each, "YYYY-MM-DD").endOf("day"))
+    .filter(each => each.isSameOrAfter(startOfMonth) && each.isSameOrBefore(endOfMonth));
 };
 
 const padZero = number => number.toString().padStart(2, "0");
@@ -30,18 +34,18 @@ app.get("/", (req, res) => {
     .pipe(csv())
     .on("data", row =>
       result.push({
-        date: moment(row[0], "D/M/YYYY").startOf("day"),
+        date: moment(row[0], "D/MM/YYYY").endOf('day'),
         steps: row[2] ? Number(row[2].replace(",", "")) : null
       })
     )
     .on("end", () => {
-      const aiaData = getAiaDataByYear(now.year());
+      const aiaData = getAiaDataByYear(now.year(), now.month());
       const fitbitData = result.slice(1, result.length - 1);
       // In Fitbit but not in AIA
       const diff = fitbitData
         .filter(
           ({ date, steps }) =>
-            steps >= 10000 && !aiaData.find(aiaDate => aiaDate.isSame(date))
+            steps >= 10000 && !aiaData.find(aiaDate => aiaDate.isSame(date, 'day'))
         )
         .map(({ date, steps }) => ({
           steps: steps,
@@ -67,18 +71,18 @@ app.get("/:year/:month", (req, res) => {
     .pipe(csv())
     .on("data", row =>
       result.push({
-        date: moment(row[0], "D/M/YYYY").startOf("day"),
+        date: moment(row[0], "D/M/YYYY").endOf("day"),
         steps: row[2] ? Number(row[2].replace(",", "")) : null
       })
     )
     .on("end", () => {
-      const aiaData = getAiaDataByYear(yearParam);
+      const aiaData = getAiaDataByYear(yearParam, monthParam - 1);
       const fitbitData = result.slice(1, result.length - 1);
       // In Fitbit but not in AIA
       const diff = fitbitData
         .filter(
           ({ date, steps }) =>
-            steps >= 10000 && !aiaData.find(aiaDate => aiaDate.isSame(date))
+            steps >= 10000 && !aiaData.find(aiaDate => aiaDate.isSame(date, 'day'))
         )
         .map(({ date, steps }) => ({
           steps,
