@@ -8,8 +8,6 @@ import aiaData from "./static-data/AIA_Data_23032020";
 const app = express();
 const port = 3000;
 
-moment.locale("en-SG");
-
 const getAiaDataByYear = year => {
   return aiaData
     .filter(
@@ -45,9 +43,9 @@ app.get("/", (req, res) => {
           ({ date, steps }) =>
             steps >= 10000 && !aiaData.find(aiaDate => aiaDate.isSame(date))
         )
-        .map(each => ({
-          steps: each.steps,
-          date: each.date.toLocaleString()
+        .map(({ date, steps }) => ({
+          steps: steps,
+          date: date.toLocaleString()
         }));
 
       res.status(200).send({
@@ -82,9 +80,9 @@ app.get("/:year/:month", (req, res) => {
           ({ date, steps }) =>
             steps >= 10000 && !aiaData.find(aiaDate => aiaDate.isSame(date))
         )
-        .map(each => ({
-          steps: each.steps,
-          date: each.date.toLocaleString()
+        .map(({ date, steps }) => ({
+          steps,
+          date: date.toLocaleString()
         }));
 
       res.status(200).send({
@@ -96,5 +94,6 @@ app.get("/:year/:month", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server Running on: ${port}`);
+  moment.locale("en-SG");
+  console.log(`Server Running on Port: ${port} and Locale: ${moment.locale()}`);
 });
