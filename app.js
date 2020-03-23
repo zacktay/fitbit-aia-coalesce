@@ -12,12 +12,15 @@ moment.locale("en-SG");
 
 const getAiaDataByYear = year => {
   return aiaData
-    .filter(({ points, awardedDate }) => (points === "50" || points === "100") && awardedDate.includes(year))
+    .filter(
+      ({ points, awardedDate }) =>
+        (points === "50" || points === "100") && awardedDate.includes(year)
+    )
     .map(({ awardedDate }) => awardedDate)
     .map(each => moment(each, "YYYY-MM-DD").startOf("day"));
 };
 
-const padZero = number => number.toString().padStart(2, '0');
+const padZero = number => number.toString().padStart(2, "0");
 
 // Methods
 app.get("/", (req, res) => {
@@ -27,12 +30,12 @@ app.get("/", (req, res) => {
   // Reads CSV for particular year and month
   fs.createReadStream(path)
     .pipe(csv())
-    .on("data", row => {
+    .on("data", row =>
       result.push({
         date: moment(row[0], "D/M/YYYY").startOf("day"),
         steps: row[2] ? Number(row[2].replace(",", "")) : null
-      });
-    })
+      })
+    )
     .on("end", () => {
       const aiaData = getAiaDataByYear(now.year());
       const fitbitData = result.slice(1, result.length - 1);
@@ -64,12 +67,12 @@ app.get("/:year/:month", (req, res) => {
   // Reads CSV for particular year and month
   fs.createReadStream(path)
     .pipe(csv())
-    .on("data", row => {
+    .on("data", row =>
       result.push({
         date: moment(row[0], "D/M/YYYY").startOf("day"),
         steps: row[2] ? Number(row[2].replace(",", "")) : null
-      });
-    })
+      })
+    )
     .on("end", () => {
       const aiaData = getAiaDataByYear(yearParam);
       const fitbitData = result.slice(1, result.length - 1);
