@@ -3,7 +3,7 @@ import csv from "csv-parser";
 import fs from "fs";
 import moment from "moment";
 
-import aiaData from "./static-data/AIA_Data_23032020";
+import aiaData from "./static-data/AIA_Data";
 
 const app = express();
 const port = 3000;
