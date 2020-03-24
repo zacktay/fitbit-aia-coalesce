@@ -81,7 +81,7 @@ app.get("/:year/:month", (req, res) => {
     .pipe(csv())
     .on("data", row => result.push(processRow(row)))
     .on("end", () => {
-      const aiaData = getAiaDataByYearAndMonth(now.year(), now.month());
+      const aiaData = getAiaDataByYearAndMonth(yearParam, monthParam - 1);
       const response = getDiff(aiaData, result);
 
       res.status(200).send(response);
