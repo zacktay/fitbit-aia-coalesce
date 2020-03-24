@@ -4,9 +4,15 @@ import fs from "fs";
 import moment from "moment";
 
 import aiaData from "./static-data/AIA_Data";
+import {
+  STEP_POINTS,
+  EXERCISE_POINTS,
+  PORT_NUMBER,
+  MIN_STEPS
+} from "./static-data/constants";
 
 const app = express();
-const port = 3000;
+const port = PORT_NUMBER;
 
 const padZero = number => number.toString().padStart(2, "0");
 
@@ -24,7 +30,9 @@ const getAiaDataByYearAndMonth = (year, month) => {
     .endOf("day");
 
   return aiaData
-    .filter(({ points }) => points === "50" || points === "100")
+    .filter(
+      ({ points }) => points === STEP_POINTS || points === EXERCISE_POINTS
+    )
     .map(({ awardedDate }) => moment(awardedDate, "YYYY-MM-DD").endOf("day"))
     .filter(
       each =>
@@ -38,7 +46,8 @@ const getDiff = (aiaData, result) => {
   const diff = fitbitData
     .filter(
       ({ date, steps }) =>
-        steps >= 10000 && !aiaData.find(aiaDate => aiaDate.isSame(date, "day"))
+        steps >= MIN_STEPS &&
+        !aiaData.find(aiaDate => aiaDate.isSame(date, "day"))
     )
     .map(({ date, steps }) => ({
       steps: steps,
