@@ -5,6 +5,15 @@ const data = [
     desc: "10,000+ steps",
     healthHabitCategory: "Stay Active",
     points: "50",
+    awardedDate: "2020-03-25",
+    eventType: "Regular Fitness"
+  },
+  {
+    code: "STE5",
+    pointsHistoryTitle: "10,000 to 12,499 steps",
+    desc: "10,000+ steps",
+    healthHabitCategory: "Stay Active",
+    points: "50",
     awardedDate: "2020-03-21",
     eventType: "Regular Fitness"
   },
